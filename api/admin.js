@@ -22,6 +22,20 @@ module.exports = async (req, res) => {
   if (!same(req.headers['x-admin-password'] || '', pass)) return res.status(401).json({ error: '비밀번호가 맞지 않아요.' });
   if (!SB_URL || !SB_KEY) return res.status(500).json({ error: 'Supabase 연결 정보가 없어요.' });
 
+  if (req.method === 'GET' && req.query && req.query.view === 'channels') {
+    // 최근 30일 유입 채널별 방문·예약 수
+    const since = new Date(Date.now() - 30 * 864e5).toISOString();
+    const [v, i] = await Promise.all([
+      fetch(`${SB_URL}/rest/v1/visits?select=channel&created_at=gte.${since}&limit=50000`, { headers: sbHeaders() }),
+      fetch(`${SB_URL}/rest/v1/inquiries?select=channel&created_at=gte.${since}&limit=50000`, { headers: sbHeaders() }),
+    ]);
+    if (!v.ok || !i.ok) return res.status(500).json({ error: '유입 채널을 불러오지 못했어요.' });
+    const map = {};
+    for (const r of await v.json()) (map[r.channel || 'direct'] ||= { visits: 0, reservations: 0 }).visits++;
+    for (const r of await i.json()) (map[r.channel || 'direct'] ||= { visits: 0, reservations: 0 }).reservations++;
+    const channels = Object.entries(map).map(([channel, c]) => ({ channel, ...c })).sort((a, b) => b.visits - a.visits || b.reservations - a.reservations);
+    return res.status(200).json({ channels });
+  }
   if (req.method === 'GET') {
     const r = await fetch(`${SB_URL}/rest/v1/inquiries?select=*&order=created_at.desc&limit=500`, { headers: sbHeaders() });
     if (!r.ok) return res.status(500).json({ error: '불러오지 못했어요.' });

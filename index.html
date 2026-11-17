@@ -323,6 +323,25 @@ footer p{margin:2px 0}
 
 <script>
 (() => {
+  // 유입 채널(UTM) — 이 탭에서 처음 들어온 경로를 기억해 예약과 함께 보낸다
+  const attr = (() => {
+    let saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem('tt_attr') || 'null'); } catch {}
+    const q = new URLSearchParams(location.search);
+    const utm = { source: q.get('utm_source'), medium: q.get('utm_medium'), campaign: q.get('utm_campaign'), content: q.get('utm_content'), term: q.get('utm_term') };
+    let refHost = '';
+    try { const h = new URL(document.referrer).hostname; if (h && h !== location.hostname) refHost = h; } catch {}
+    const fresh = utm.source ? { ...utm, ref_host: refHost } : (refHost ? { ref_host: refHost } : null);
+    const a = fresh || saved || {};
+    let sent = false;
+    try { sent = sessionStorage.getItem('tt_visit') === '1'; sessionStorage.setItem('tt_attr', JSON.stringify(a)); } catch {}
+    if (!sent) {
+      try { sessionStorage.setItem('tt_visit', '1'); } catch {}
+      fetch('/api/visit', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a) }).catch(() => {});
+    }
+    return a;
+  })();
+
   const MENU = [
     { id: 'jokbal_s', name: '족발 小', price: 10000 },
     { id: 'jokbal_l', name: '족발 大', price: 15000 },
@@ -427,7 +446,7 @@ footer p{margin:2px 0}
     try {
       const r = await fetch('/api/reservation', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.value, contact: contact.value, items, pickup_date: dateSel.value, pickup_time: timeSel.value, consent: consent.checked, website: document.getElementById('website').value }),
+        body: JSON.stringify({ name: name.value, contact: contact.value, items, pickup_date: dateSel.value, pickup_time: timeSel.value, consent: consent.checked, attr, website: document.getElementById('website').value }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || '예약을 보내지 못했어요. 잠시 뒤 다시 시도하거나 전화로 예약해 주세요.');

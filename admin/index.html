@@ -44,6 +44,22 @@ button{font-family:inherit;cursor:pointer}
 .status button{min-height:48px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--cream);font-size:15px;font-weight:700}
 .status button[aria-pressed=true]{background:var(--shout);color:var(--ink);border-color:var(--shout)}
 .empty{color:var(--muted);text-align:center;padding:40px 0}
+.views{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface);border-radius:999px;padding:6px;margin-bottom:16px}
+.views button{min-height:44px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-size:16px;font-weight:800}
+.views button[aria-pressed=true]{background:var(--cream);color:var(--ink)}
+.ch-tag{display:inline-block;margin-left:6px;padding:2px 10px;border-radius:999px;background:rgba(255,244,222,.1);font-size:13px;font-weight:700;color:var(--cream)}
+h2{font-size:18px;margin:24px 0 4px}
+.ch-table{width:100%;border-collapse:collapse;font-size:16px;margin-top:8px}
+.ch-table th{text-align:right;color:var(--muted);font-weight:700;font-size:14px;padding:8px 6px;border-bottom:1px solid var(--line)}
+.ch-table th:first-child,.ch-table td:first-child{text-align:left}
+.ch-table td{text-align:right;padding:12px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ch-table td:first-child{font-weight:700}
+.bar{display:block;height:6px;border-radius:999px;background:var(--shout);margin-top:6px;min-width:4px}
+.links{display:grid;gap:10px;margin-top:10px}
+.link{background:var(--surface);border-radius:20px;padding:14px 16px}
+.link b{display:block;margin-bottom:4px}
+.link code{display:block;font-size:13px;color:var(--muted);word-break:break-all;margin-bottom:10px}
+.link button{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--cream);font-weight:700;font-size:15px}
 </style>
 </head>
 <body>
@@ -64,6 +80,24 @@ button{font-family:inherit;cursor:pointer}
       <div><h1>예약함</h1><p class="sub" style="margin:0" id="updated"></p></div>
       <div style="display:flex;gap:6px"><button class="ghost" id="reload">새로고침</button><button class="ghost" id="logout">나가기</button></div>
     </div>
+    <div class="views" role="group" aria-label="화면 고르기">
+      <button data-v="list" aria-pressed="true">예약함</button>
+      <button data-v="channels" aria-pressed="false">유입 채널</button>
+    </div>
+
+    <div id="channelView" hidden>
+      <h2>최근 30일 유입 채널</h2>
+      <p class="sub" style="margin:0">손님이 어디서 사이트에 들어왔는지, 그중 예약까지 한 수예요.</p>
+      <table class="ch-table">
+        <thead><tr><th>채널</th><th>방문</th><th>예약</th><th>예약률</th></tr></thead>
+        <tbody id="chBody"></tbody>
+      </table>
+      <h2>채널별 추적 링크</h2>
+      <p class="sub" style="margin:0">각 채널에 사이트 주소 대신 아래 링크를 넣으면 어디서 왔는지 따로 셀 수 있어요.</p>
+      <div class="links" id="links"></div>
+    </div>
+
+    <div id="listView">
     <div class="big"><span>새 예약<small>아직 확인 전화를 안 한 예약</small></span><b id="newCount">0</b></div>
     <div class="tabs" role="group" aria-label="상태별 보기">
       <button data-f="새 문의" aria-pressed="true">새 예약</button>
@@ -73,12 +107,21 @@ button{font-family:inherit;cursor:pointer}
     </div>
     <p class="err" id="appErr" role="alert"></p>
     <div class="list" id="list"></div>
+    </div>
   </section>
 </div>
 
 <script>
 (() => {
   const LABEL = { '새 문의': '새 예약', '연락함': '확인 전화함', '완료': '픽업 완료' };
+  const CH = { naver: '네이버', baemin: '배달의민족', coupangeats: '쿠팡이츠', qr: '가게 QR·전단지', google: '구글', kakao: '카카오·다음', instagram: '인스타그램', facebook: '페이스북', direct: '직접 입력·즐겨찾기' };
+  const chName = c => CH[c] || c || CH.direct;
+  const LINKS = [
+    ['네이버 지도·플레이스', 'utm_source=naver&utm_medium=map&utm_campaign=place'],
+    ['배달의민족 가게 소개', 'utm_source=baemin&utm_medium=app&utm_campaign=store_info'],
+    ['쿠팡이츠 가게 소개', 'utm_source=coupangeats&utm_medium=app&utm_campaign=store_info'],
+    ['가게 QR·전단지', 'utm_source=qr&utm_medium=offline&utm_campaign=store'],
+  ];
   const KEY = 'tt_admin_pw';
   let rows = [], filter = '새 문의';
   const $ = id => document.getElementById(id);
@@ -94,8 +137,8 @@ button{font-family:inherit;cursor:pointer}
   };
   const when = iso => new Date(iso).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-  const api = async (method, body) => {
-    const r = await fetch('/api/admin', { method, headers: { 'x-admin-password': sessionStorage.getItem(KEY) || '', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const api = async (method, body, qs = '') => {
+    const r = await fetch('/api/admin' + qs, { method, headers: { 'x-admin-password': sessionStorage.getItem(KEY) || '', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
     const data = await r.json().catch(() => ({}));
     if (r.status === 401) { sessionStorage.removeItem(KEY); showLogin('비밀번호가 맞지 않아요.'); throw new Error(''); }
     if (!r.ok) throw new Error(data.error || '불러오지 못했어요.');
@@ -118,6 +161,7 @@ button{font-family:inherit;cursor:pointer}
       const pick = document.createElement('p'); pick.className = 'pick' + (r.pickup_date === seoulToday() ? ' today' : ''); pick.textContent = pickLabel(r);
       const order = document.createElement('p'); order.className = 'order'; order.textContent = r.message || '';
       const meta = document.createElement('p'); meta.className = 'meta'; meta.textContent = `예상 ${won(r.total)} · 접수 ${when(r.created_at)}`;
+      const tag = document.createElement('span'); tag.className = 'ch-tag'; tag.textContent = chName(r.channel); meta.append(tag);
       const who = document.createElement('div'); who.className = 'who';
       const nm = document.createElement('strong'); nm.textContent = r.name;
       const tel = document.createElement('a'); tel.href = 'tel:' + String(r.contact).replace(/[^\d+]/g, ''); tel.textContent = '전화 ' + r.contact;
@@ -144,6 +188,39 @@ button{font-family:inherit;cursor:pointer}
     render();
   };
 
+  const loadChannels = async () => {
+    $('appErr').textContent = '';
+    const { channels = [] } = await api('GET', null, '?view=channels');
+    const body = $('chBody'); body.innerHTML = '';
+    const max = Math.max(1, ...channels.map(c => c.visits));
+    if (!channels.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 4; td.className = 'empty'; td.textContent = '아직 기록된 방문이 없어요.'; tr.append(td); body.append(tr); }
+    for (const c of channels) {
+      const tr = document.createElement('tr');
+      const name = document.createElement('td'); name.textContent = chName(c.channel);
+      const bar = document.createElement('span'); bar.className = 'bar'; bar.style.width = (c.visits / max * 100) + '%'; name.append(bar);
+      const v = document.createElement('td'); v.textContent = c.visits;
+      const r = document.createElement('td'); r.textContent = c.reservations;
+      const p = document.createElement('td'); p.textContent = c.visits ? Math.round(c.reservations / c.visits * 100) + '%' : '-';
+      tr.append(name, v, r, p); body.append(tr);
+    }
+  };
+  const links = $('links');
+  for (const [label, q] of LINKS) {
+    const url = `${location.origin}/?${q}`;
+    const d = document.createElement('div'); d.className = 'link';
+    const b = document.createElement('b'); b.textContent = label;
+    const c = document.createElement('code'); c.textContent = url;
+    const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = '링크 복사';
+    btn.onclick = async () => { try { await navigator.clipboard.writeText(url); btn.textContent = '복사됨'; } catch { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents(c); s.removeAllRanges(); s.addRange(rg); } setTimeout(() => btn.textContent = '링크 복사', 1500); };
+    d.append(b, c, btn); links.append(d);
+  }
+  document.querySelectorAll('.views button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.views button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    const ch = b.dataset.v === 'channels';
+    $('channelView').hidden = !ch; $('listView').hidden = ch;
+    (ch ? loadChannels() : load()).catch(e => { if (e.message) $('appErr').textContent = e.message; });
+  }));
+
   $('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
     sessionStorage.setItem(KEY, $('pw').value);
@@ -154,7 +231,7 @@ button{font-family:inherit;cursor:pointer}
     document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     render();
   }));
-  $('reload').onclick = () => load().catch(e => { if (e.message) $('appErr').textContent = e.message; });
+  $('reload').onclick = () => ($('channelView').hidden ? load() : loadChannels()).catch(e => { if (e.message) $('appErr').textContent = e.message; });
   $('logout').onclick = () => { sessionStorage.removeItem(KEY); rows = []; showLogin(''); };
 
   if (sessionStorage.getItem(KEY)) load().catch(e => { if (e.message) showLogin(e.message); });

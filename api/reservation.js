@@ -1,4 +1,5 @@
 // 포장 예약 받기 — 서버 키는 환경변수로만 읽는다. 값은 코드에 적지 않는다.
+const { clean, channelOf } = require('./_channel');
 const SB_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
 const clip = (v, n) => String(v ?? '').trim().slice(0, n);
@@ -59,7 +60,8 @@ module.exports = async (req, res) => {
   if (date === now.date && h * 60 + m < now.mins + 30) return res.status(400).json({ error: '그 시간은 지났거나 너무 가까워요. 다른 시간을 골라 주세요.' });
 
   const message = Object.entries(items).map(([id, q]) => `${MENU[id].name} ${q}개`).join(', ');
-  const row = { name, contact, message, items, total, pickup_date: date, pickup_time: time, consent: true };
+  const utm = clean(b.attr || {});
+  const row = { name, contact, message, items, total, pickup_date: date, pickup_time: time, consent: true, utm, channel: channelOf(utm) };
 
   const r = await fetch(`${SB_URL}/rest/v1/inquiries`, { method: 'POST', headers: { ...sbHeaders(), Prefer: 'return=minimal' }, body: JSON.stringify(row) });
   if (!r.ok) return res.status(500).json({ error: '예약을 저장하지 못했어요. 잠시 뒤 다시 시도하거나 전화로 예약해 주세요.' });
