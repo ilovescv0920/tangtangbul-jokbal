@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>탱탱불족발 용호점 | 족발·감자탕 포장 예약</title>
+<meta name="description" content="탱탱불족발 용호점 족발·감자탕 포장 예약. 족발 小 10,000원, 감자탕 小 6,000원. 매일 13시부터 픽업, 일요일 휴무.">
+<meta name="theme-color" content="#FFCF1A">
+<meta property="og:title" content="탱탱불족발 용호점 포장 예약">
+<meta property="og:description" content="족발·감자탕, 미리 예약하고 따뜻하게 찾아가세요.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%23FFCF1A'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' font-family='sans-serif' font-weight='900' fill='%231C110B'%3E족%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --shout:#FFCF1A;      /* 시장 간판 노랑 — 화면의 주인공 */
+  --ink:#1C110B;        /* 간장에 조린 족발 빛 — 노랑 위 글자 */
+  --void:#1C110B;       /* 어두운 바탕 */
+  --surface:#2B1B12;    /* 어두운 바탕 위 판 */
+  --cream:#FFF4DE;      /* 어두운 바탕 위 글자 */
+  --muted:rgba(255,244,222,.66);
+  --chili:#F0502E;      /* 감자탕 국물 — 휴무·오류에만 */
+  --glass:rgba(255,244,222,.09);
+  --glass-line:rgba(255,244,222,.22);
+  --display:"Black Han Sans", "Pretendard Variable", sans-serif;
+  --body:"Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--void);color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.6;word-break:keep-all;overflow-wrap:break-word}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--shout);outline-offset:3px;border-radius:999px}
+.wrap{width:min(1120px,100% - 32px);margin-inline:auto}
+
+/* ---------- 첫 화면: 노란 간판이 아래로 흘러내린다 ---------- */
+.hero{background:var(--shout);color:var(--ink);border-radius:0 0 120px 40px;padding:20px 0 140px;position:relative;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-family:var(--display);font-size:20px;letter-spacing:-.01em;line-height:1.1}
+.brand small{display:block;font-family:var(--body);font-size:13px;font-weight:600;opacity:.7;letter-spacing:0}
+.call-mini{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:2px solid rgba(28,17,11,.2);border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(52px,13.5vw,132px);line-height:.98;letter-spacing:-.035em;margin:56px 0 0}
+.hero h1 span{display:block}
+.hero .lede{font-size:clamp(17px,2.2vw,21px);font-weight:600;max-width:30ch;margin:22px 0 0;opacity:.82}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:0 28px;border-radius:999px;font:700 17px/1 var(--body);text-decoration:none;border:0;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.btn:hover{transform:scale(1.04);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.btn:active{transform:scale(.95)}
+.btn-ink{background:var(--ink);color:var(--shout)}
+.btn-line{background:transparent;color:var(--ink);border:2px solid rgba(28,17,11,.22)}
+.btn-shout{background:var(--shout);color:var(--ink)}
+.steam{position:absolute;right:-6vw;top:40px;width:min(46vw,520px);aspect-ratio:1;pointer-events:none;opacity:.9}
+
+/* 첫 화면 등장 — 한 번만 */
+@media (prefers-reduced-motion:no-preference){
+  .hero h1 span{opacity:0;transform:translateY(40px);animation:rise .9s var(--ease) forwards}
+  .hero h1 span:nth-child(2){animation-delay:.08s}
+  .hero h1 span:nth-child(3){animation-delay:.16s}
+  .hero .lede,.hero .cta-row{opacity:0;animation:rise .9s .3s var(--ease) forwards}
+  .ticket{animation:drift 7s ease-in-out infinite}
+  .steam path{animation:steam 4.5s ease-in-out infinite}
+  .steam path:nth-child(2){animation-delay:-1.5s}
+  .steam path:nth-child(3){animation-delay:-3s}
+}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes steam{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(-14px);opacity:1}}
+
+/* ---------- 가격표: 노랑과 어둠 사이에 떠 있는 유리판 ---------- */
+.ticket-zone{margin-top:-96px;position:relative;z-index:2}
+.ticket{background:rgba(28,17,11,.62);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid var(--glass-line);border-radius:32px;padding:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);max-width:560px;margin-left:auto}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.ticket-head h2{margin:0;font-size:15px;font-weight:700;color:var(--muted)}
+.today{display:inline-flex;align-items:center;gap:6px;background:var(--shout);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;white-space:nowrap}
+.today.closed{background:var(--chili);color:#fff}
+.today i{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.price-row{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:4px 18px;padding:14px 0;border-top:1px solid var(--glass-line)}
+.price-row:first-of-type{border-top:0}
+.price-row b{font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:-.02em}
+.price-row span{font-size:15px;color:var(--muted);text-align:right}
+.price-row span strong{display:block;color:var(--cream);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* ---------- 어두운 바탕 구역 ---------- */
+section{padding:72px 0}
+.sec-title{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,64px);line-height:1.05;letter-spacing:-.03em;margin:0 0 12px}
+.sec-sub{font-size:17px;color:var(--muted);margin:0 0 32px;max-width:40ch}
+
+.menu-grid{display:grid;gap:16px}
+.dish{background:var(--surface);border-radius:40px 40px 40px 12px;padding:28px}
+.dish h3{font-family:var(--display);font-weight:400;font-size:clamp(44px,9vw,76px);letter-spacing:-.03em;line-height:1;margin:0 0 18px}
+.sizes{display:flex;gap:10px;flex-wrap:wrap}
+.size{flex:1 1 140px;border:1px solid var(--glass-line);border-radius:999px;padding:12px 20px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.size em{font-style:normal;font-weight:700;color:var(--muted)}
+.size strong{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.note{font-size:14px;color:var(--muted);margin:14px 0 0}
+.extra{border:1px dashed var(--glass-line);border-radius:40px;padding:22px 28px;color:var(--muted);font-size:15px}
+.extra b{color:var(--cream)}
+
+/* 픽업 안내 — 노랑이 다시 한 번 스며든다 */
+.pickup{background:var(--shout);color:var(--ink);border-radius:40px 140px 40px 40px;padding:40px 28px;position:relative}
+.pickup .sec-title{margin-bottom:24px}
+.facts{display:grid;gap:0;margin:0}
+.fact{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:16px 0;border-top:2px solid rgba(28,17,11,.12)}
+.fact dt{font-weight:700;opacity:.7;font-size:15px}
+.fact dd{margin:0;font-weight:800;font-size:19px;line-height:1.4}
+.fact dd small{display:block;font-weight:600;font-size:14px;opacity:.75}
+.fact dd.pending{opacity:.55;font-weight:700}
+.pickup .btn{margin-top:20px}
+
+/* ---------- 예약 폼 ---------- */
+.form-card{background:var(--glass);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid var(--glass-line);border-radius:32px;padding:24px;box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+fieldset{border:0;padding:0;margin:0 0 26px}
+legend{font-weight:800;font-size:18px;margin-bottom:12px;padding:0}
+.qty-list{display:grid;gap:10px}
+.qty{display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(0,0,0,.18);border-radius:999px;padding:8px 8px 8px 22px}
+.qty .label{font-weight:700}
+.qty .label small{display:block;font-weight:600;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:transparent;color:var(--cream);font-size:22px;line-height:1;cursor:pointer;transition:transform .2s var(--ease)}
+.stepper button:active{transform:scale(.9)}
+.stepper button:disabled{opacity:.3;cursor:default}
+.stepper output{min-width:32px;text-align:center;font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.qty.on{background:rgba(255,207,26,.16);box-shadow:inset 0 0 0 1px rgba(255,207,26,.5)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding:0 6px;font-weight:700}
+.total strong{font-family:var(--display);font-weight:400;font-size:30px;color:var(--shout);font-variant-numeric:tabular-nums}
+.total small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.row2{display:grid;gap:12px}
+label.field{display:block;font-weight:700;font-size:15px}
+label.field span{display:block;margin-bottom:6px;color:var(--muted)}
+input[type=text],input[type=tel],select{width:100%;min-height:56px;border-radius:999px;border:1px solid var(--glass-line);background:rgba(0,0,0,.22);color:var(--cream);font:600 17px var(--body);padding:0 22px;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--cream) 50%),linear-gradient(135deg,var(--cream) 50%,transparent 50%);background-position:calc(100% - 26px) 50%,calc(100% - 20px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:44px}
+select option{color:#111}
+input::placeholder{color:rgba(255,244,222,.38)}
+input:focus,select:focus{outline:none;border-color:var(--shout);box-shadow:0 0 0 3px rgba(255,207,26,.3)}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted);line-height:1.5;cursor:pointer}
+.consent input{width:24px;height:24px;flex:none;accent-color:var(--shout);margin:0}
+.consent b{color:var(--cream)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.submit{width:100%;margin-top:22px;min-height:62px;font-size:19px}
+.submit[disabled]{opacity:.6;transform:none;box-shadow:none;cursor:wait}
+.msg{margin:14px 0 0;font-weight:700;font-size:16px;min-height:1px}
+.msg.err{color:#FF8A70}
+.done{text-align:left;padding:8px 4px}
+.done h3{font-family:var(--display);font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-.02em;color:var(--shout);margin:0 0 12px}
+.done p{margin:0 0 8px;color:var(--cream)}
+.done .summary{background:rgba(0,0,0,.2);border-radius:24px;padding:16px 20px;margin:16px 0;color:var(--muted);font-size:15px}
+
+footer{padding:56px 0 120px;color:var(--muted);font-size:14px}
+footer .brand{color:var(--cream);margin-bottom:10px}
+footer p{margin:2px 0}
+
+/* 폰 아래쪽 고정 버튼 */
+.dock{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;display:flex;gap:8px;padding:8px;border-radius:999px;background:rgba(28,17,11,.72);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--glass-line);transition:transform .4s var(--ease),opacity .4s var(--ease)}
+.dock .btn{flex:1;min-height:52px;padding:0 16px}
+.dock .btn-tel{flex:0 0 auto;background:transparent;color:var(--cream);border:1px solid var(--glass-line)}
+.dock.away{transform:translateY(140%);opacity:0;pointer-events:none}
+
+@media (min-width:760px){
+  .hero{padding:28px 0 180px;border-radius:0 0 220px 56px}
+  .hero h1{margin-top:88px}
+  .ticket-zone{margin-top:-150px}
+  .ticket{padding:30px 34px}
+  .menu-grid{grid-template-columns:1.25fr 1fr;align-items:start}
+  .menu-grid .dish:nth-child(2){margin-top:64px}
+  .extra{grid-column:1 / -1}
+  .pickup{padding:64px 64px;border-radius:56px 220px 56px 56px}
+  .facts{grid-template-columns:1fr 1fr;column-gap:48px}
+  .reserve-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+  .reserve-grid .sec-head{position:sticky;top:40px}
+  .form-card{padding:36px}
+  .row2{grid-template-columns:1fr 1fr}
+  .dock{display:none}
+  footer{padding-bottom:56px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="steam" viewBox="0 0 200 200" aria-hidden="true">
+    <g fill="none" stroke="#1C110B" stroke-opacity=".14" stroke-width="10" stroke-linecap="round">
+      <path d="M60 170c-20-30 20-45 0-80s20-50 0-80"/>
+      <path d="M100 170c-20-30 20-45 0-80s20-50 0-80"/>
+      <path d="M140 170c-20-30 20-45 0-80s20-50 0-80"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">탱탱불족발<small>용호점</small></div>
+      <a class="call-mini" href="tel:01072055570" aria-label="가게에 전화하기 010-7205-5570">전화하기</a>
+    </div>
+    <h1><span>족발 감자탕,</span><span>미리 예약하고</span><span>따뜻하게 찾아가세요</span></h1>
+    <p class="lede">메뉴와 픽업 시간만 정하면 돼요. 가게에서 확인 전화를 드리면 예약이 확정돼요.</p>
+    <div class="cta-row">
+      <a class="btn btn-ink" href="#reserve">포장 예약하기</a>
+      <a class="btn btn-line" href="#menu">메뉴 보기</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap ticket-zone">
+    <aside class="ticket" aria-label="가격과 오늘 픽업 안내">
+      <div class="ticket-head">
+        <h2>포장 가격</h2>
+        <span class="today" id="today"><i></i><span>매일 13시부터 픽업</span></span>
+      </div>
+      <div class="price-row"><b>족발</b><span>小<strong>10,000원</strong></span><span>大<strong>15,000원</strong></span></div>
+      <div class="price-row"><b>감자탕</b><span>小<strong>6,000원</strong></span><span>大<strong>10,000원</strong></span></div>
+    </aside>
+  </div>
+
+  <section id="menu">
+    <div class="wrap">
+      <h2 class="sec-title">메뉴와 가격</h2>
+      <p class="sec-sub">족발과 감자탕이 메인이에요. 크기는 小와 大 두 가지예요.</p>
+      <div class="menu-grid">
+        <article class="dish">
+          <h3>족발</h3>
+          <div class="sizes">
+            <div class="size"><em>小</em><strong>10,000원</strong></div>
+            <div class="size"><em>大</em><strong>15,000원</strong></div>
+          </div>
+          <p class="note">크기별 양(몇 인분)과 같이 나오는 것은 준비 중이에요. 궁금하면 전화로 물어보세요.</p>
+        </article>
+        <article class="dish">
+          <h3>감자탕</h3>
+          <div class="sizes">
+            <div class="size"><em>小</em><strong>6,000원</strong></div>
+            <div class="size"><em>大</em><strong>10,000원</strong></div>
+          </div>
+          <p class="note">크기별 양(몇 인분)은 준비 중이에요.</p>
+        </article>
+        <p class="extra"><b>다른 메뉴도 있어요.</b> 추가 메뉴와 가격은 준비 중이에요. 가게에 전화하면 바로 알려 드려요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pickup" aria-labelledby="pickup-title">
+    <div class="wrap">
+      <div class="pickup">
+        <h2 class="sec-title" id="pickup-title">픽업 안내</h2>
+        <dl class="facts">
+          <div class="fact"><dt>픽업</dt><dd>매일 13시부터<small>일요일은 쉬어요</small></dd></div>
+          <div class="fact"><dt>영업</dt><dd>매일 12시 ~ 20시<small>매주 일요일 휴무</small></dd></div>
+          <div class="fact"><dt>위치</dt><dd class="pending">준비 중이에요</dd></div>
+          <div class="fact"><dt>전화</dt><dd><a href="tel:01072055570">010-7205-5570</a></dd></div>
+        </dl>
+        <a class="btn btn-ink" href="#reserve">포장 예약하기</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="reserve">
+    <div class="wrap reserve-grid">
+      <div class="sec-head">
+        <h2 class="sec-title">포장 예약</h2>
+        <p class="sec-sub">메뉴와 픽업 시간을 남겨 주세요. 가게에서 확인 전화를 드리면 예약이 확정돼요. 값은 픽업할 때 가게에서 내요.</p>
+      </div>
+
+      <div class="form-card">
+        <form id="form" novalidate>
+          <fieldset>
+            <legend>메뉴 고르기</legend>
+            <div class="qty-list" id="qtyList"></div>
+            <div class="total" aria-live="polite"><span>예상 금액<small>픽업할 때 가게에서 내요</small></span><strong id="total">0원</strong></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>픽업 날짜와 시간</legend>
+            <div class="row2">
+              <label class="field"><span>날짜</span><select id="date" name="pickup_date" required></select></label>
+              <label class="field"><span>시간</span><select id="time" name="pickup_time" required></select></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>예약하는 분</legend>
+            <div class="row2">
+              <label class="field"><span>이름</span><input type="text" id="name" name="name" autocomplete="name" maxlength="50" placeholder="홍길동" required></label>
+              <label class="field"><span>연락처</span><input type="tel" id="contact" name="contact" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="010-0000-0000" required></label>
+            </div>
+          </fieldset>
+
+          <label class="consent">
+            <input type="checkbox" id="consent" required>
+            <span><b>개인정보 수집·이용에 동의해요 (필수)</b><br>이름과 연락처는 포장 예약 확인 연락에만 쓰고, 예약일로부터 6개월 뒤 지워요.</span>
+          </label>
+
+          <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" id="website" tabindex="-1" autocomplete="off"></label></div>
+
+          <button class="btn btn-shout submit" type="submit" id="submit">포장 예약하기</button>
+          <p class="msg" id="msg" role="alert"></p>
+        </form>
+
+        <div class="done" id="done" hidden>
+          <h3>예약이 접수됐어요</h3>
+          <p>가게에서 확인 전화를 드리면 예약이 확정돼요.</p>
+          <div class="summary" id="summary"></div>
+          <p>급하면 <a href="tel:01072055570">010-7205-5570</a>으로 전화 주세요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">탱탱불족발 용호점</div>
+    <p>영업 매일 12시 ~ 20시, 일요일 휴무</p>
+    <p>전화 <a href="tel:01072055570">010-7205-5570</a></p>
+  </div>
+</footer>
+
+<nav class="dock" id="dock" aria-label="빠른 예약">
+  <a class="btn btn-tel" href="tel:01072055570">전화</a>
+  <a class="btn btn-shout" href="#reserve">포장 예약하기</a>
+</nav>
+
+<script>
+(() => {
+  const MENU = [
+    { id: 'jokbal_s', name: '족발 小', price: 10000 },
+    { id: 'jokbal_l', name: '족발 大', price: 15000 },
+    { id: 'gamjatang_s', name: '감자탕 小', price: 6000 },
+    { id: 'gamjatang_l', name: '감자탕 大', price: 10000 },
+  ];
+  const SLOTS = ['13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  const won = n => n.toLocaleString('ko-KR') + '원';
+  const qty = Object.fromEntries(MENU.map(m => [m.id, 0]));
+
+  // 서울 시간 기준 오늘
+  const seoulNow = () => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).map(x => [x.type, x.value]));
+    return { date: `${p.year}-${p.month}-${p.day}`, mins: (+p.hour) * 60 + (+p.minute) };
+  };
+  const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  const dow = iso => new Date(iso + 'T00:00:00Z').getUTCDay();
+  const DAYS = ['일','월','화','수','목','금','토'];
+  const label = (iso, today) => {
+    const [, m, d] = iso.split('-');
+    const rel = iso === today ? '오늘 ' : iso === addDays(today, 1) ? '내일 ' : '';
+    return `${rel}${+m}월 ${+d}일 (${DAYS[dow(iso)]})`;
+  };
+  const toMins = t => { const [h, m] = t.split(':'); return h * 60 + +m; };
+  const LEAD = 30; // 오늘 예약은 지금부터 30분 뒤 시간부터
+
+  // 오늘 픽업 배지
+  const badge = document.getElementById('today');
+  const now = seoulNow();
+  const openToday = dow(now.date) !== 0 && SLOTS.some(s => toMins(s) >= now.mins + LEAD);
+  if (dow(now.date) === 0) { badge.classList.add('closed'); badge.lastElementChild.textContent = '오늘은 쉬어요'; }
+  else if (!openToday) { badge.lastElementChild.textContent = '오늘 픽업 마감, 내일 예약 가능'; }
+  else if (now.mins < toMins('13:00')) { badge.lastElementChild.textContent = '오늘 13시부터 픽업'; }
+  else { badge.lastElementChild.textContent = '오늘 픽업 가능'; }
+
+  // 메뉴 수량
+  const list = document.getElementById('qtyList');
+  list.innerHTML = MENU.map(m => `
+    <div class="qty" data-id="${m.id}">
+      <div class="label">${m.name}<small>${won(m.price)}</small></div>
+      <div class="stepper">
+        <button type="button" data-d="-1" aria-label="${m.name} 하나 빼기" disabled>−</button>
+        <output aria-live="polite" aria-label="${m.name} 수량">0</output>
+        <button type="button" data-d="1" aria-label="${m.name} 하나 더하기">+</button>
+      </div>
+    </div>`).join('');
+  const totalEl = document.getElementById('total');
+  const render = () => {
+    let t = 0;
+    list.querySelectorAll('.qty').forEach(row => {
+      const id = row.dataset.id, n = qty[id];
+      row.querySelector('output').textContent = n;
+      row.querySelector('[data-d="-1"]').disabled = n === 0;
+      row.querySelector('[data-d="1"]').disabled = n >= 20;
+      row.classList.toggle('on', n > 0);
+      t += n * MENU.find(m => m.id === id).price;
+    });
+    totalEl.textContent = won(t);
+  };
+  list.addEventListener('click', e => {
+    const b = e.target.closest('button[data-d]'); if (!b) return;
+    const id = b.closest('.qty').dataset.id;
+    qty[id] = Math.max(0, Math.min(20, qty[id] + +b.dataset.d));
+    render();
+  });
+  render();
+
+  // 날짜·시간
+  const dateSel = document.getElementById('date'), timeSel = document.getElementById('time');
+  const dates = [];
+  for (let i = 0; dates.length < 7 && i < 14; i++) {
+    const iso = addDays(now.date, i);
+    if (dow(iso) === 0) continue;
+    if (i === 0 && !openToday) continue;
+    dates.push(iso);
+  }
+  dateSel.innerHTML = dates.map(d => `<option value="${d}">${label(d, now.date)}</option>`).join('');
+  const fillTimes = () => {
+    const n = seoulNow();
+    const slots = SLOTS.filter(s => dateSel.value !== n.date || toMins(s) >= n.mins + LEAD);
+    const keep = timeSel.value;
+    timeSel.innerHTML = slots.map(s => `<option value="${s}">${s}</option>`).join('');
+    if (slots.includes(keep)) timeSel.value = keep;
+  };
+  dateSel.addEventListener('change', fillTimes);
+  fillTimes();
+
+  // 제출
+  const form = document.getElementById('form'), msg = document.getElementById('msg'), btn = document.getElementById('submit');
+  const fail = (text, el) => { msg.textContent = text; msg.className = 'msg err'; if (el) el.focus(); };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    msg.textContent = ''; msg.className = 'msg';
+    const name = document.getElementById('name'), contact = document.getElementById('contact'), consent = document.getElementById('consent');
+    const items = Object.fromEntries(Object.entries(qty).filter(([, n]) => n > 0));
+    if (!Object.keys(items).length) return fail('메뉴를 하나 이상 골라 주세요.', list.querySelector('[data-d="1"]'));
+    if (!timeSel.value) return fail('픽업 시간을 골라 주세요.', timeSel);
+    if (!name.value.trim()) return fail('이름을 적어 주세요.', name);
+    if (contact.value.replace(/\D/g, '').length < 9) return fail('연락받을 전화번호를 적어 주세요.', contact);
+    if (!consent.checked) return fail('개인정보 수집·이용에 동의해 주세요.', consent);
+    btn.disabled = true; btn.textContent = '보내는 중…';
+    try {
+      const r = await fetch('/api/reservation', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.value, contact: contact.value, items, pickup_date: dateSel.value, pickup_time: timeSel.value, consent: consent.checked, website: document.getElementById('website').value }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || '예약을 보내지 못했어요. 잠시 뒤 다시 시도하거나 전화로 예약해 주세요.');
+      const lines = MENU.filter(m => items[m.id]).map(m => `${m.name} ${items[m.id]}개`).join(', ');
+      document.getElementById('summary').innerHTML = '';
+      [`${label(dateSel.value, seoulNow().date)} ${timeSel.value} 픽업`, lines, `예상 금액 ${totalEl.textContent}`].forEach(t => { const p = document.createElement('div'); p.textContent = t; document.getElementById('summary').appendChild(p); });
+      form.hidden = true; document.getElementById('done').hidden = false;
+      document.getElementById('reserve').scrollIntoView({ block: 'start' });
+    } catch (err) {
+      fail(err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = '포장 예약하기';
+    }
+  });
+
+  // 폼이 보이면 아래 고정 버튼 숨기기
+  const dock = document.getElementById('dock');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => dock.classList.toggle('away', en.isIntersecting), { threshold: 0.05 }).observe(document.getElementById('reserve'));
+  }
+})();
+</script>
+</body>
+</html>
