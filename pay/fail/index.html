@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>결제 안 됨 | 탱탱불족발 용호점</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--shout:#FFCF1A;--ink:#1C110B;--cream:#FFF4DE;--muted:rgba(255,244,222,.66);--line:rgba(255,244,222,.22)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--cream);font:16px/1.6 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+.wrap{width:min(560px,100% - 32px);margin:0 auto;padding:48px 0}
+.brand{font-family:"Black Han Sans",sans-serif;font-size:20px;color:var(--shout)}
+h1{font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:clamp(40px,11vw,64px);line-height:1.05;letter-spacing:-.03em;margin:32px 0 12px}
+p{color:var(--muted);font-size:17px}
+.why{color:#FFB4A2;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 28px;border-radius:999px;font-weight:800;font-size:17px;text-decoration:none;margin-top:12px;background:var(--shout);color:var(--ink)}
+.btn.line{background:transparent;color:var(--cream);border:1px solid var(--line);margin-left:6px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand">탱탱불족발 용호점</div>
+  <h1>결제가 되지 않았어요</h1>
+  <p class="why" id="why"></p>
+  <p>돈은 빠져나가지 않았고, 예약도 아직 안 됐어요. 다시 예약하거나 가게에 전화해 주세요.</p>
+  <a class="btn" href="/#reserve">다시 예약하기</a><a class="btn line" href="tel:01072055570">전화하기</a>
+</main>
+<script>
+  const q = new URLSearchParams(location.search);
+  const code = q.get('code');
+  document.getElementById('why').textContent = code === 'PAY_PROCESS_CANCELED' ? '결제를 취소했어요.' : (q.get('message') || '');
+</script>
+</body>
+</html>

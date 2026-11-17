@@ -143,10 +143,16 @@ input:focus,select:focus{outline:none;border-color:var(--shout);box-shadow:0 0 0
 .submit[disabled]{opacity:.6;transform:none;box-shadow:none;cursor:wait}
 .msg{margin:14px 0 0;font-weight:700;font-size:16px;min-height:1px}
 .msg.err{color:#FF8A70}
-.done{text-align:left;padding:8px 4px}
-.done h3{font-family:var(--display);font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-.02em;color:var(--shout);margin:0 0 12px}
-.done p{margin:0 0 8px;color:var(--cream)}
-.done .summary{background:rgba(0,0,0,.2);border-radius:24px;padding:16px 20px;margin:16px 0;color:var(--muted);font-size:15px}
+.pay{margin-top:26px}
+.pay-wait{margin:0;padding:18px 22px;border:1px dashed var(--glass-line);border-radius:24px;color:var(--muted);font-size:15px}
+.pay-box{background:#fff;border-radius:24px;overflow:hidden;padding:4px 0}
+.test-note{margin:0 0 10px;font-size:14px;font-weight:700;color:var(--shout)}
+.sameday{margin:16px 0 0;padding:14px 18px;border-radius:20px;background:rgba(240,80,46,.16);color:#FFB4A2;font-weight:700;font-size:15px}
+.policy{margin-top:28px;padding:22px 24px;border-radius:28px;border:1px solid var(--glass-line)}
+.policy h3{margin:0 0 10px;font-size:17px}
+.policy ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px;display:grid;gap:6px}
+.policy p{margin:12px 0 0;font-size:15px;font-weight:700}
+.biz{margin-top:14px;font-size:13px;opacity:.8}
 
 footer{padding:56px 0 120px;color:var(--muted);font-size:14px}
 footer .brand{color:var(--cream);margin-bottom:10px}
@@ -194,7 +200,7 @@ footer p{margin:2px 0}
       <a class="call-mini" href="tel:01072055570" aria-label="가게에 전화하기 010-7205-5570">전화하기</a>
     </div>
     <h1><span>족발 감자탕,</span><span>미리 예약하고</span><span>따뜻하게 찾아가세요</span></h1>
-    <p class="lede">메뉴와 픽업 시간만 정하면 돼요. 가게에서 확인 전화를 드리면 예약이 확정돼요.</p>
+    <p class="lede">메뉴와 픽업 시간을 고르고 결제하면 예약이 끝나요. 시간 맞춰 찾아가기만 하세요.</p>
     <div class="cta-row">
       <a class="btn btn-ink" href="#reserve">포장 예약하기</a>
       <a class="btn btn-line" href="#menu">메뉴 보기</a>
@@ -259,7 +265,16 @@ footer p{margin:2px 0}
     <div class="wrap reserve-grid">
       <div class="sec-head">
         <h2 class="sec-title">포장 예약</h2>
-        <p class="sec-sub">메뉴와 픽업 시간을 남겨 주세요. 가게에서 확인 전화를 드리면 예약이 확정돼요. 값은 픽업할 때 가게에서 내요.</p>
+        <p class="sec-sub">메뉴와 픽업 시간을 고르고 결제해 주세요. 결제가 끝나면 예약이 확정돼요.</p>
+        <div class="policy" id="policy">
+          <h3>취소·환불 안내</h3>
+          <ul>
+            <li>픽업 전날 20시까지 전화로 취소하면 전액 환불해요.</li>
+            <li>족발과 감자탕은 픽업 당일에 만들어요. 그래서 픽업 당일에는 취소·환불이 어려워요.</li>
+            <li>가게 사정으로 준비하지 못하면 전액 환불해요.</li>
+          </ul>
+          <p>취소 전화 <a href="tel:01072055570">010-7205-5570</a></p>
+        </div>
       </div>
 
       <div class="form-card">
@@ -267,7 +282,7 @@ footer p{margin:2px 0}
           <fieldset>
             <legend>메뉴 고르기</legend>
             <div class="qty-list" id="qtyList"></div>
-            <div class="total" aria-live="polite"><span>예상 금액<small>픽업할 때 가게에서 내요</small></span><strong id="total">0원</strong></div>
+            <div class="total" aria-live="polite"><span>결제 금액<small>예약할 때 결제해요</small></span><strong id="total">0원</strong></div>
           </fieldset>
 
           <fieldset>
@@ -293,16 +308,21 @@ footer p{margin:2px 0}
 
           <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" id="website" tabindex="-1" autocomplete="off"></label></div>
 
-          <button class="btn btn-shout submit" type="submit" id="submit">포장 예약하기</button>
+          <fieldset class="pay">
+            <legend>결제</legend>
+            <p class="pay-wait" id="payWait">메뉴를 고르면 결제 수단이 나와요.</p>
+            <p class="test-note" id="testNote" hidden>지금은 테스트 결제예요. 실제로 돈이 빠져나가지 않아요.</p>
+            <div class="pay-box" id="payBox" hidden>
+              <div id="payment-method"></div>
+              <div id="agreement"></div>
+            </div>
+          </fieldset>
+
+          <p class="sameday" id="sameDay" hidden>오늘 픽업 예약이에요. 오늘 바로 만들기 때문에 결제 후에는 취소·환불이 어려워요.</p>
+
+          <button class="btn btn-shout submit" type="submit" id="submit">결제하고 예약하기</button>
           <p class="msg" id="msg" role="alert"></p>
         </form>
-
-        <div class="done" id="done" hidden>
-          <h3>예약이 접수됐어요</h3>
-          <p>가게에서 확인 전화를 드리면 예약이 확정돼요.</p>
-          <div class="summary" id="summary"></div>
-          <p>급하면 <a href="tel:01072055570">010-7205-5570</a>으로 전화 주세요.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -313,6 +333,11 @@ footer p{margin:2px 0}
     <div class="brand">탱탱불족발 용호점</div>
     <p>영업 매일 12시 ~ 20시, 일요일 휴무</p>
     <p>전화 <a href="tel:01072055570">010-7205-5570</a></p>
+    <div class="biz">
+      <p>상호 탱탱불족발 용호점</p>
+      <p>대표자, 사업자등록번호, 사업장 주소, 통신판매업 신고번호: 준비 중</p>
+      <p>결제는 토스페이먼츠로 처리돼요.</p>
+    </div>
   </div>
 </footer>
 
@@ -321,6 +346,7 @@ footer p{margin:2px 0}
   <a class="btn btn-shout" href="#reserve">포장 예약하기</a>
 </nav>
 
+<script src="https://js.tosspayments.com/v2/standard"></script>
 <script>
 (() => {
   // 유입 채널(UTM) — 이 탭에서 처음 들어온 경로를 기억해 예약과 함께 보낸다
@@ -389,6 +415,34 @@ footer p{margin:2px 0}
       </div>
     </div>`).join('');
   const totalEl = document.getElementById('total');
+  let currentTotal = 0;
+
+  // 토스페이먼츠 결제위젯 — 메뉴를 고르면 결제 수단을 보여 준다
+  const payWait = document.getElementById('payWait'), payBox = document.getElementById('payBox');
+  let widgetsReady = null;
+  const startPay = () => {
+    if (!widgetsReady) widgetsReady = (async () => {
+      const r = await fetch('/api/pay-config');
+      const cfg = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(cfg.error || '결제창을 불러오지 못했어요.');
+      if (typeof TossPayments !== 'function') throw new Error('결제창을 불러오지 못했어요. 새로고침하거나 전화로 예약해 주세요.');
+      document.getElementById('testNote').hidden = !cfg.test;
+      const w = TossPayments(cfg.clientKey).widgets({ customerKey: TossPayments.ANONYMOUS });
+      await w.setAmount({ currency: 'KRW', value: currentTotal });
+      payWait.hidden = true; payBox.hidden = false;
+      await Promise.all([
+        w.renderPaymentMethods({ selector: '#payment-method', variantKey: 'DEFAULT' }),
+        w.renderAgreement({ selector: '#agreement', variantKey: 'AGREEMENT' }),
+      ]);
+      return w;
+    })().catch(err => { widgetsReady = null; payBox.hidden = true; payWait.hidden = false; payWait.textContent = err.message; throw err; });
+    return widgetsReady;
+  };
+  const syncPay = () => {
+    if (!currentTotal) return;
+    startPay().then(w => currentTotal && w.setAmount({ currency: 'KRW', value: currentTotal })).catch(() => {});
+  };
+
   const render = () => {
     let t = 0;
     list.querySelectorAll('.qty').forEach(row => {
@@ -400,6 +454,8 @@ footer p{margin:2px 0}
       t += n * MENU.find(m => m.id === id).price;
     });
     totalEl.textContent = won(t);
+    currentTotal = t;
+    syncPay();
   };
   list.addEventListener('click', e => {
     const b = e.target.closest('button[data-d]'); if (!b) return;
@@ -426,8 +482,10 @@ footer p{margin:2px 0}
     timeSel.innerHTML = slots.map(s => `<option value="${s}">${s}</option>`).join('');
     if (slots.includes(keep)) timeSel.value = keep;
   };
-  dateSel.addEventListener('change', fillTimes);
-  fillTimes();
+  const sameDay = document.getElementById('sameDay');
+  const onDate = () => { fillTimes(); sameDay.hidden = dateSel.value !== seoulNow().date; };
+  dateSel.addEventListener('change', onDate);
+  onDate();
 
   // 제출
   const form = document.getElementById('form'), msg = document.getElementById('msg'), btn = document.getElementById('submit');
@@ -442,23 +500,30 @@ footer p{margin:2px 0}
     if (!name.value.trim()) return fail('이름을 적어 주세요.', name);
     if (contact.value.replace(/\D/g, '').length < 9) return fail('연락받을 전화번호를 적어 주세요.', contact);
     if (!consent.checked) return fail('개인정보 수집·이용에 동의해 주세요.', consent);
-    btn.disabled = true; btn.textContent = '보내는 중…';
+    btn.disabled = true; btn.textContent = '결제창 여는 중…';
     try {
+      const widgets = await startPay();
       const r = await fetch('/api/reservation', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.value, contact: contact.value, items, pickup_date: dateSel.value, pickup_time: timeSel.value, consent: consent.checked, attr, website: document.getElementById('website').value }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || '예약을 보내지 못했어요. 잠시 뒤 다시 시도하거나 전화로 예약해 주세요.');
-      const lines = MENU.filter(m => items[m.id]).map(m => `${m.name} ${items[m.id]}개`).join(', ');
-      document.getElementById('summary').innerHTML = '';
-      [`${label(dateSel.value, seoulNow().date)} ${timeSel.value} 픽업`, lines, `예상 금액 ${totalEl.textContent}`].forEach(t => { const p = document.createElement('div'); p.textContent = t; document.getElementById('summary').appendChild(p); });
-      form.hidden = true; document.getElementById('done').hidden = false;
-      document.getElementById('reserve').scrollIntoView({ block: 'start' });
+      if (!data.orderId) return;
+      if (data.amount !== currentTotal) throw new Error('금액이 바뀌었어요. 메뉴를 다시 확인해 주세요.');
+      await widgets.setAmount({ currency: 'KRW', value: data.amount });
+      await widgets.requestPayment({
+        orderId: data.orderId,
+        orderName: data.orderName,
+        successUrl: location.origin + '/pay/success/',
+        failUrl: location.origin + '/pay/fail/',
+        customerName: name.value.trim(),
+        customerMobilePhone: contact.value.replace(/\D/g, ''),
+      });
     } catch (err) {
-      fail(err.message);
+      fail(err && err.code === 'USER_CANCEL' ? '결제를 취소했어요. 다시 누르면 결제할 수 있어요.' : (err && err.message) || '결제를 시작하지 못했어요. 다시 시도해 주세요.');
     } finally {
-      btn.disabled = false; btn.textContent = '포장 예약하기';
+      btn.disabled = false; btn.textContent = '결제하고 예약하기';
     }
   });
 

@@ -1,4 +1,5 @@
 // 포장 예약 받기 — 서버 키는 환경변수로만 읽는다. 값은 코드에 적지 않는다.
+const crypto = require('node:crypto');
 const { clean, channelOf } = require('./_channel');
 const SB_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
@@ -59,11 +60,18 @@ module.exports = async (req, res) => {
   const [h, m] = time.split(':').map(Number);
   if (date === now.date && h * 60 + m < now.mins + 30) return res.status(400).json({ error: '그 시간은 지났거나 너무 가까워요. 다른 시간을 골라 주세요.' });
 
-  const message = Object.entries(items).map(([id, q]) => `${MENU[id].name} ${q}개`).join(', ');
+  const lines = Object.entries(items);
+  const message = lines.map(([id, q]) => `${MENU[id].name} ${q}개`).join(', ');
+  const orderName = lines.length > 1 ? `${MENU[lines[0][0]].name} 외 ${lines.length - 1}건` : `${MENU[lines[0][0]].name} ${lines[0][1]}개`;
   const utm = clean(b.attr || {});
-  const row = { name, contact, message, items, total, pickup_date: date, pickup_time: time, consent: true, utm, channel: channelOf(utm) };
+  // 결제 전 주문 — 결제가 끝나야 예약함에 '새 예약'으로 보인다
+  const orderId = `TT${date.replace(/-/g, '')}${crypto.randomUUID().replace(/-/g, '').slice(0, 20)}`;
+  const row = {
+    name, contact, message, items, total, pickup_date: date, pickup_time: time, consent: true, utm, channel: channelOf(utm),
+    order_id: orderId, payment_status: 'pending',
+  };
 
   const r = await fetch(`${SB_URL}/rest/v1/inquiries`, { method: 'POST', headers: { ...sbHeaders(), Prefer: 'return=minimal' }, body: JSON.stringify(row) });
   if (!r.ok) return res.status(500).json({ error: '예약을 저장하지 못했어요. 잠시 뒤 다시 시도하거나 전화로 예약해 주세요.' });
-  return res.status(200).json({ ok: true, total });
+  return res.status(200).json({ ok: true, orderId, orderName, amount: total, sameDay: date === now.date });
 };

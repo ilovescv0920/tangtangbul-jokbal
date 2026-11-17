@@ -44,6 +44,11 @@ button{font-family:inherit;cursor:pointer}
 .status button{min-height:48px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--cream);font-size:15px;font-weight:700}
 .status button[aria-pressed=true]{background:var(--shout);color:var(--ink);border-color:var(--shout)}
 .empty{color:var(--muted);text-align:center;padding:40px 0}
+.card.off{opacity:.6}
+.pay-tag{display:inline-block;margin-right:8px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:800;background:rgba(255,244,222,.1);color:var(--cream)}
+.pay-tag.paid{background:var(--shout);color:var(--ink)}
+.pay-tag.refunded,.pay-tag.failed{background:rgba(240,80,46,.25);color:#FFB4A2}
+.refund{width:100%;margin-top:8px;min-height:44px;border-radius:999px;border:1px solid rgba(240,80,46,.5);background:transparent;color:#FFB4A2;font-weight:700;font-size:15px}
 .views{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface);border-radius:999px;padding:6px;margin-bottom:16px}
 .views button{min-height:44px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-size:16px;font-weight:800}
 .views button[aria-pressed=true]{background:var(--cream);color:var(--ink)}
@@ -98,11 +103,12 @@ h2{font-size:18px;margin:24px 0 4px}
     </div>
 
     <div id="listView">
-    <div class="big"><span>새 예약<small>아직 확인 전화를 안 한 예약</small></span><b id="newCount">0</b></div>
+    <div class="big"><span>새 예약<small>결제가 끝났고 아직 확인 안 한 예약</small></span><b id="newCount">0</b></div>
     <div class="tabs" role="group" aria-label="상태별 보기">
       <button data-f="새 문의" aria-pressed="true">새 예약</button>
-      <button data-f="연락함" aria-pressed="false">확인 전화함</button>
+      <button data-f="연락함" aria-pressed="false">확인함</button>
       <button data-f="완료" aria-pressed="false">픽업 완료</button>
+      <button data-f="refunded" aria-pressed="false">환불</button>
       <button data-f="all" aria-pressed="false">전체</button>
     </div>
     <p class="err" id="appErr" role="alert"></p>
@@ -113,7 +119,9 @@ h2{font-size:18px;margin:24px 0 4px}
 
 <script>
 (() => {
-  const LABEL = { '새 문의': '새 예약', '연락함': '확인 전화함', '완료': '픽업 완료' };
+  const LABEL = { '새 문의': '새 예약', '연락함': '확인함', '완료': '픽업 완료' };
+  const PAY = { paid: '결제 완료', refunded: '환불됨', pending: '결제 안 됨', failed: '결제 실패', none: '결제 없이 받은 예약' };
+  const isActive = r => !r.payment_status || r.payment_status === 'paid' || r.payment_status === 'none';
   const CH = { naver: '네이버', baemin: '배달의민족', coupangeats: '쿠팡이츠', qr: '가게 QR·전단지', google: '구글', kakao: '카카오·다음', instagram: '인스타그램', facebook: '페이스북', direct: '직접 입력·즐겨찾기' };
   const chName = c => CH[c] || c || CH.direct;
   const LINKS = [
@@ -148,8 +156,10 @@ h2{font-size:18px;margin:24px 0 4px}
   const showLogin = msg => { $('app').hidden = true; $('login').hidden = false; $('loginErr').textContent = msg || ''; $('pw').value = ''; $('pw').focus(); };
 
   const render = () => {
-    $('newCount').textContent = rows.filter(r => r.status === '새 문의').length;
-    let shown = filter === 'all' ? rows.slice() : rows.filter(r => r.status === filter);
+    $('newCount').textContent = rows.filter(r => isActive(r) && r.status === '새 문의').length;
+    let shown = filter === 'all' ? rows.slice()
+      : filter === 'refunded' ? rows.filter(r => r.payment_status === 'refunded')
+      : rows.filter(r => isActive(r) && r.status === filter);
     const key = r => `${r.pickup_date || ''} ${r.pickup_time || ''}`;
     shown.sort((a, b) => filter === '완료' || filter === 'all' ? key(b).localeCompare(key(a)) : key(a).localeCompare(key(b)));
     const list = $('list');
@@ -157,10 +167,12 @@ h2{font-size:18px;margin:24px 0 4px}
     if (!shown.length) { list.innerHTML = '<p class="empty">여기에 해당하는 예약이 없어요.</p>'; return; }
     for (const r of shown) {
       const c = document.createElement('article');
-      c.className = 'card' + (r.status === '새 문의' ? ' new' : '');
+      c.className = 'card' + (isActive(r) && r.status === '새 문의' ? ' new' : '') + (isActive(r) ? '' : ' off');
       const pick = document.createElement('p'); pick.className = 'pick' + (r.pickup_date === seoulToday() ? ' today' : ''); pick.textContent = pickLabel(r);
       const order = document.createElement('p'); order.className = 'order'; order.textContent = r.message || '';
-      const meta = document.createElement('p'); meta.className = 'meta'; meta.textContent = `예상 ${won(r.total)} · 접수 ${when(r.created_at)}`;
+      const meta = document.createElement('p'); meta.className = 'meta'; meta.textContent = `${won(r.total)} · 접수 ${when(r.created_at)}`;
+      const ps = r.payment_status || 'none';
+      const pay = document.createElement('span'); pay.className = 'pay-tag ' + ps; pay.textContent = PAY[ps] + (ps === 'paid' && r.pay_method ? ` · ${r.pay_method}` : ''); meta.prepend(pay);
       const tag = document.createElement('span'); tag.className = 'ch-tag'; tag.textContent = chName(r.channel); meta.append(tag);
       const who = document.createElement('div'); who.className = 'who';
       const nm = document.createElement('strong'); nm.textContent = r.name;
@@ -174,7 +186,18 @@ h2{font-size:18px;margin:24px 0 4px}
         b.onclick = async () => { if (r.status === s) return; b.disabled = true; try { await api('PATCH', { id: r.id, status: s }); await load(); } catch (e) { $('appErr').textContent = e.message; } finally { b.disabled = false; } };
         st.append(b);
       }
-      c.append(pick, order, meta, who, st);
+      c.append(pick, order, meta, who);
+      if (isActive(r)) c.append(st);
+      if (ps === 'paid') {
+        const rf = document.createElement('button'); rf.type = 'button'; rf.className = 'refund'; rf.textContent = `${won(r.total)} 환불하기`;
+        rf.onclick = async () => {
+          if (!confirm(`${r.name}님 ${won(r.total)} 결제를 환불할까요?\n환불하면 되돌릴 수 없어요.`)) return;
+          rf.disabled = true; rf.textContent = '환불하는 중…';
+          try { await api('PATCH', { id: r.id, action: 'refund', reason: '가게에서 예약 취소' }); await load(); }
+          catch (e) { $('appErr').textContent = e.message; rf.disabled = false; rf.textContent = `${won(r.total)} 환불하기`; }
+        };
+        c.append(rf);
+      }
       list.append(c);
     }
   };
